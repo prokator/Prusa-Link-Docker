@@ -1,0 +1,30 @@
+# Filename: docker-compose.yaml
+services:
+  prusalink:
+    # Ensure we build for the architecture of the machine running the compose file
+    # (WSL2 = amd64, Pi = arm64)
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: ghcr.io/prokator/prusalink-base:latest
+    
+    image: prusalink-app:latest
+    container_name: prusalink
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    
+    devices:
+      # /dev/ttyACM0 is standard for USB on Linux/Pi.
+      # On WSL2, ensure you've attached the device via 'usbipd'
+      - "/dev/ttyACM0:/dev/ttyACM0"
+    
+    volumes:
+      - prusalink_data:/etc/prusalink
+    
+    environment:
+      - UDEV=1
+
+volumes:
+  prusalink_data:

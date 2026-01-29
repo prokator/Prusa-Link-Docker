@@ -1,0 +1,34 @@
+# Filename: Dockerfile.base
+#
+# BUILD INSTRUCTIONS (Multi-Arch):
+# 1. Create a builder instance if you haven't already:
+#    docker buildx create --use --name multiarch-builder
+#
+# 2. Build and push to your registry (Hub/GHCR) so both WSL2 and Pi can pull it:
+#    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/prokator/prusalink-base:latest  -f Dockerfile.base . --push
+#
+
+# ------------------------------------------------------------------------------
+
+FROM python:3.11-slim-bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies
+# libcap-dev, libmagic1, libturbojpeg0 are core requirements
+# build-essential/gcc needed for compiling python extensions
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    libcap-dev \
+    libmagic1 \
+    libturbojpeg0 \
+    libatlas-base-dev \
+    libffi-dev \
+    libopenblas0 \
+    udev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
