@@ -11,7 +11,6 @@ services:
         BASE_IMAGE: ghcr.io/prokator/prusalink-base:latest
     
     image: prusalink-app:latest
-    container_name: prusalink
     restart: unless-stopped
     privileged: true
     network_mode: host
