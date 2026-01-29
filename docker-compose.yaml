@@ -1,6 +1,7 @@
 # Filename: docker-compose.yaml
 services:
   prusalink:
+    container_name: prusalink
     # Ensure we build for the architecture of the machine running the compose file
     # (WSL2 = amd64, Pi = arm64)
     build:
@@ -20,7 +21,7 @@ services:
       - "/dev/video0:/dev/video0"
     
     volumes:
-      - prusalink_data:/etc/prusalink
+      - ./data:/etc/prusalink
     
     environment:
       - UDEV=1
