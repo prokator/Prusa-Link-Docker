@@ -1,5 +1,14 @@
 # Filename: Dockerfile.base
-# Changed base to bullseye for legacy camera support
+#
+# BUILD INSTRUCTIONS (Multi-Arch):
+# 1. Create a builder instance if you haven't already:
+#    docker buildx create --use --name multiarch-builder
+#
+# 2. Build and push to your registry (Hub/GHCR) so both WSL2 and Pi can pull it:
+#    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/prokator/prusalink-base:latest  -f Dockerfile.base . --push
+#
+
+# ------------------------------------------------------------------------------
 FROM python:3.11-slim-bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive
