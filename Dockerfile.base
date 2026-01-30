@@ -29,6 +29,8 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libopenblas0 \
     udev \
+    # uncomment for the Raspberry Pi camera module support
+    # python3-libcamera \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip

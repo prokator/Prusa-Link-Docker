@@ -1,6 +1,6 @@
 # Filename: Dockerfile
 # ALLOWS OVERRIDING THE BASE IMAGE REPO
-ARG BASE_IMAGE=prusalink-base:latest
+ARG BASE_IMAGE=ghcr.io/prokator/prusalink-base:latest
 FROM ${BASE_IMAGE}
 
 WORKDIR /app

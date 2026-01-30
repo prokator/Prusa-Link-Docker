@@ -21,7 +21,7 @@ services:
     
     volumes:
       - ./data:/etc/prusalink
-      - ./data/prusa_printer_settings.ini:/root/prusa_printer_settings.ini
+      - ./conf/prusa_printer_settings.ini:/root/prusa_printer_settings.ini
     
     environment:
       - UDEV=1
