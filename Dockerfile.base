@@ -19,7 +19,9 @@ ENV PYTHONUNBUFFERED=1
 # Install system dependencies
 # libcap-dev, libmagic1, libturbojpeg0 are core requirements
 # build-essential/gcc needed for compiling python extensions
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list && \
+    apt-get update && apt-get install -y \
     build-essential \
     git \
     libcap-dev \
@@ -30,7 +32,7 @@ RUN apt-get update && apt-get install -y \
     libopenblas0 \
     udev \
     # uncomment for the Raspberry Pi camera module support
-    # python3-libcamera \
+    # -t bookworm-backports python3-libcamera \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip
