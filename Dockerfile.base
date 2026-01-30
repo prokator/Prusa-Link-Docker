@@ -9,13 +9,16 @@
 #
 
 # ------------------------------------------------------------------------------
-FROM python:3.11-slim-bullseye
+
+FROM python:3.11-slim-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
+# libcap-dev, libmagic1, libturbojpeg0 are core requirements
+# build-essential/gcc needed for compiling python extensions
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
@@ -26,7 +29,6 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libopenblas0 \
     udev \
-    v4l-utils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip

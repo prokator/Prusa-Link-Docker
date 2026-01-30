@@ -1,30 +1,63 @@
 # Filename: docker-compose.yaml
 services:
-  prusalink:
-    container_name: prusalink
-    # Ensure we build for the architecture of the machine running the compose file
-    # (WSL2 = amd64, Pi = arm64)
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BASE_IMAGE: ghcr.io/prokator/prusalink-base:latest
-    
-    image: prusalink-app:latest
-    restart: unless-stopped
-    privileged: true
-    network_mode: host
-    
-    devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"
-      - "/dev/video0:/dev/video0"
-    
-    volumes:
-      - ./data:/etc/prusalink
-      - ./conf/prusa_printer_settings.ini:/root/prusa_printer_settings.ini
-    
-    environment:
-      - UDEV=1
+    prusalink:
+        container_name: prusalink
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                BASE_IMAGE: ghcr.io/prokator/prusalink-base:latest
+        image: prusalink-app:latest
+        restart: unless-stopped
+        privileged: true
+        ports:
+            - "80:8080"
+        devices:
+            - "/dev/ttyACM0:/dev/ttyACM0"
+        volumes:
+            - ./data:/etc/prusalink
+            - ./conf/prusa_printer_settings.ini:/root/prusa_printer_settings.ini
+        environment:
+            - UDEV=1
+
+    # Dedicated camera sidecar
+    camera:
+        image: pikvm/ustreamer
+        container_name: prusa-camera
+        restart: unless-stopped
+        privileged: true
+        ports:
+            - "8180:8080"
+        devices:
+            - "/dev/video0:/dev/video0"
+        command: >
+            --device=/dev/video0 
+            --host=0.0.0.0 
+            --port=8080 
+            --format=mjpeg 
+            --resolution=1920x1080 
+            --desired-fps=30
+            --quality=85
+            --device-timeout=5
+
+    camera-pusher:
+        image: python:3.11-slim
+        container_name: prusa-pusher
+        restart: unless-stopped
+        depends_on:
+            - camera
+        volumes:
+            - ./pusher/push.py:/app/pusher.py
+        working_dir: /app
+        environment:
+            - TOKEN=<prusa_connect_camera_token>
+            - SNAPSHOT_URL=http://camera:8080/snapshot
+        entrypoint:
+            - /bin/sh
+            - -c
+            - |
+                pip install -q requests
+                python3 pusher.py
 
 volumes:
   prusalink_data:
